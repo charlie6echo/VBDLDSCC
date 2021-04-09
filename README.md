@@ -1,1 +1,1 @@
-# Vision-Based-Layout-Detection-and-Context-Classification
+# Vision Based Layout Detection and Context Classification
