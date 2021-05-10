@@ -16,6 +16,7 @@ import logging
 from collections import OrderedDict
 import multiprocessing
 import numpy as np
+import focal_loss as FL
 import tensorflow as tf
 import keras
 import keras.backend as K
@@ -1040,6 +1041,9 @@ def rpn_class_loss_graph(rpn_match, rpn_class_logits):
     loss = K.sparse_categorical_crossentropy(target=anchor_class,
                                              output=rpn_class_logits,
                                              from_logits=True)
+    #FOCAL LOSS
+    loss = FL.sparse_categorical_focal_loss(anchor_class,rpn_class_logits,2,from_logits=True)
+
     loss = K.switch(tf.size(loss) > 0, K.mean(loss), tf.constant(0.0))
     return loss
 
