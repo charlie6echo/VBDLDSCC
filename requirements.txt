@@ -6,6 +6,7 @@ matplotlib
 scikit-image
 tensorflow==1.15.2
 keras==2.2.4
+focal_loss
 opencv-python
 h5py
 imgaug
