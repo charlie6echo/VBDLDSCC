@@ -1019,6 +1019,13 @@ def smooth_l1_loss(y_true, y_pred):
     loss = (less_than_one * 0.5 * diff**2) + (1 - less_than_one) * (diff - 0.5)
     return loss
 
+def Focal_loss(rpn_class_logits,CE_loss,gamma=2):
+	#FOCAL LOSS = ((1-pt)**gamma) * CE_loss
+	gamma = tf.convert_to_tensor(gamma, dtype=tf.dtypes.float32)
+	probs = tf.nn.softmax(rpn_class_logits)
+	focal_modulation = (1 - probs) ** gamma
+	FLoss = focal_modulation * CE_loss
+	return FLoss
 
 def rpn_class_loss_graph(rpn_match, rpn_class_logits):
     """RPN anchor classifier loss.
@@ -1042,7 +1049,7 @@ def rpn_class_loss_graph(rpn_match, rpn_class_logits):
                                              output=rpn_class_logits,
                                              from_logits=True)
     #FOCAL LOSS
-    loss = FL.sparse_categorical_focal_loss(anchor_class,rpn_class_logits,2,from_logits=True)
+    loss = Focal_loss(rpn_class_logits,loss)
 
     loss = K.switch(tf.size(loss) > 0, K.mean(loss), tf.constant(0.0))
     return loss
@@ -1102,7 +1109,10 @@ def mrcnn_class_loss_graph(target_class_ids, pred_class_logits,
     # Loss
     loss = tf.nn.sparse_softmax_cross_entropy_with_logits(
         labels=target_class_ids, logits=pred_class_logits)
-
+    
+    #FOCAL LOSS
+    #loss = Focal_loss(rpn_class_logits,loss)
+    
     # Erase losses of predictions of classes that are not in the active
     # classes of the image.
     loss = loss * pred_active
