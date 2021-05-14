@@ -149,7 +149,7 @@ class LayoutDataset(utils.Dataset):
         mask = np.zeros([info["height"],info["width"], len(info["rectangle"]) ],
                         dtype=np.uint8)
 
-        print(info["path"])
+        #print(info["path"])
         for k, p in enumerate(info["rectangle"]):
             
             # Get indexes of pixels inside the polygon and set them to 1
