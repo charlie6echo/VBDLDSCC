@@ -16,7 +16,6 @@ import logging
 from collections import OrderedDict
 import multiprocessing
 import numpy as np
-import focal_loss as FL
 import tensorflow as tf
 import keras
 import keras.backend as K
