@@ -1021,15 +1021,15 @@ def smooth_l1_loss(y_true, y_pred):
 
 def Focal_loss(target,rpn_class_logits,CE_loss,gamma=2):
 	
-	#Focal loss for Multi-classification 
-	#FOCAL LOSS = ((1-pt)**gamma) * CE_loss
-	#gamma = tf.convert_to_tensor(gamma, dtype=tf.dtypes.float32)
-	probs = tf.nn.softmax(rpn_class_logits)
-	y_true_rank = target.shape.rank
-    	probs = tf.gather(probs, target, axis=-1, batch_dims=y_true_rank)
-	focal_modulation = (1 - probs) ** gamma
-	FLoss = focal_modulation * CE_loss
-	return FLoss
+    #Focal loss for Multi-classification 
+    #FOCAL LOSS = ((1-pt)**gamma) * CE_loss
+    #gamma = tf.convert_to_tensor(gamma, dtype=tf.dtypes.float32)
+    probs = tf.nn.softmax(rpn_class_logits)
+    y_true_rank = target.shape.rank
+    probs = tf.gather(probs, target, axis=-1, batch_dims=y_true_rank)
+    focal_modulation = (1 - probs) ** gamma
+    FLoss = focal_modulation * CE_loss
+    return FLoss
 
 def rpn_class_loss_graph(rpn_match, rpn_class_logits):
     """RPN anchor classifier loss.
