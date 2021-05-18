@@ -1021,6 +1021,7 @@ def smooth_l1_loss(y_true, y_pred):
 
 def Focal_loss(target,rpn_class_logits,CE_loss,gamma=2):
 	
+	#Focal loss for Multi-classification 
 	#FOCAL LOSS = ((1-pt)**gamma) * CE_loss
 	#gamma = tf.convert_to_tensor(gamma, dtype=tf.dtypes.float32)
 	probs = tf.nn.softmax(rpn_class_logits)
