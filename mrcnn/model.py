@@ -1026,6 +1026,7 @@ def Focal_loss(target,rpn_class_logits,CE_loss,gamma=2):
     probs = tf.nn.softmax(rpn_class_logits)
     y_true_rank = target.shape.rank
     probs = tf.gather(probs, target, axis=-1, batch_dims=y_true_rank)
+    probs = tf.linalg.diag_part(probs)
     focal_modulation = (1 - probs) ** gamma
     FLoss = focal_modulation * CE_loss
     return FLoss
