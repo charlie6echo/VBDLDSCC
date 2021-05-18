@@ -1019,10 +1019,13 @@ def smooth_l1_loss(y_true, y_pred):
     loss = (less_than_one * 0.5 * diff**2) + (1 - less_than_one) * (diff - 0.5)
     return loss
 
-def Focal_loss(rpn_class_logits,CE_loss,gamma=2):
+def Focal_loss(target,rpn_class_logits,CE_loss,gamma=2):
+	
 	#FOCAL LOSS = ((1-pt)**gamma) * CE_loss
-	gamma = tf.convert_to_tensor(gamma, dtype=tf.dtypes.float32)
+	#gamma = tf.convert_to_tensor(gamma, dtype=tf.dtypes.float32)
 	probs = tf.nn.softmax(rpn_class_logits)
+	y_true_rank = target.shape.rank
+    	probs = tf.gather(probs, target, axis=-1, batch_dims=y_true_rank)
 	focal_modulation = (1 - probs) ** gamma
 	FLoss = focal_modulation * CE_loss
 	return FLoss
@@ -1045,11 +1048,11 @@ def rpn_class_loss_graph(rpn_match, rpn_class_logits):
     rpn_class_logits = tf.gather_nd(rpn_class_logits, indices)
     anchor_class = tf.gather_nd(anchor_class, indices)
     # Cross entropy loss
-    loss = K.sparse_categorical_crossentropy(target=anchor_class,
+    CE_loss = K.sparse_categorical_crossentropy(target=anchor_class,
                                              output=rpn_class_logits,
                                              from_logits=True)
     #FOCAL LOSS
-    loss = Focal_loss(rpn_class_logits,loss)
+    loss = Focal_loss(anchor_class,rpn_class_logits,CE_loss)
 
     loss = K.switch(tf.size(loss) > 0, K.mean(loss), tf.constant(0.0))
     return loss
@@ -1111,7 +1114,7 @@ def mrcnn_class_loss_graph(target_class_ids, pred_class_logits,
         labels=target_class_ids, logits=pred_class_logits)
     
     #FOCAL LOSS
-    #loss = Focal_loss(rpn_class_logits,loss)
+    #loss = Focal_loss(target_class_ids,rpn_class_logits,loss)
     
     # Erase losses of predictions of classes that are not in the active
     # classes of the image.
