@@ -69,7 +69,7 @@ class LayoutConfig(Config):
     DETECTION_MIN_CONFIDENCE = 0.9
     
 
-    LEARNING_RATE = 0.001
+    #LEARNING_RATE = 0.001
 
 
 ############################################################
@@ -197,9 +197,9 @@ def train(model):
     # no need to train all layers, just the heads should do it.
     print("Training network heads")
     model.train(dataset_train, dataset_val,
-                learning_rate=config.LEARNING_RATE,
-                epochs=30,
-                layers='all')
+                learning_rate=args.lr#config.LEARNING_RATE,
+                epochs=args.epochs#30,
+                layers=args.layers)
 
 
 
@@ -261,6 +261,15 @@ if __name__ == '__main__':
     parser.add_argument('--weights', required=True,
                         metavar="/path/to/weights.h5",
                         help="Path to weights .h5 file or 'coco'")
+    parser.add_argument('--layers', required=True,
+                        metavar="layers to be trained ",
+                        help="layers to be trained upon")
+    parser.add_argument('--lr', required=True,
+                        metavar="Learning Rate ",
+                        help="Learning rate used for Training")
+    parser.add_argument('--epochs', required=True,
+                        metavar="epochs ",
+                        help="epochs for Training")
     parser.add_argument('--logs', required=False,
                         default=DEFAULT_LOGS_DIR,
                         metavar="/path/to/logs/",
@@ -282,7 +291,11 @@ if __name__ == '__main__':
 
     print("Weights: ", args.weights)
     print("Dataset: ", args.dataset)
+    print("Layers: ", args.layers)
+    print("LR: ", args.lr)
+    print("Epochs: ", args.epochs)
     print("Logs: ", args.logs)
+
 
     # Configurations
     if args.command == "train":
@@ -326,7 +339,7 @@ if __name__ == '__main__':
         # number of classes
         model.load_weights(weights_path, by_name=True, exclude=[
             "mrcnn_class_logits", "mrcnn_bbox_fc",
-            "mrcnn_bbox", "mrcnn_mask"])
+            "mrcnn_bbox"])
     else:
         model.load_weights(weights_path, by_name=True)
 
