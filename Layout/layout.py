@@ -197,8 +197,8 @@ def train(model):
     # no need to train all layers, just the heads should do it.
     print("Training network heads")
     model.train(dataset_train, dataset_val,
-                learning_rate=args.lr#config.LEARNING_RATE,
-                epochs=args.epochs#30,
+                learning_rate=float(args.lr),#config.LEARNING_RATE,
+                epochs=int(args.epochs),#30,
                 layers=args.layers)
 
 
