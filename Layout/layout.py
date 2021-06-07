@@ -8,16 +8,14 @@ Usage: import the module (see Jupyter notebooks for examples), or run from
        the command line as such:
 
     # Train a new model starting from pre-trained COCO weights
-    python3 layout.py train --dataset=/path/to/layout/dataset --weights=coco
+    python3 layout.py train --dataset=/path/to/layout/dataset --weights=coco --layers='heads' --lr=0.001 --epochs=30
 
     # Resume training a model that you had trained earlier
-    python3 layout.py train --dataset=/path/to/layout/dataset --weights=last
+    python3 layout.py train --dataset=/path/to/layout/dataset --weights=last --layers='heads' --lr=0.001 --epochs=30
 
     # Train a new model starting from ImageNet weights
-    python3 layout.py train --dataset=/path/to/layout/dataset --weights=imagenet
+    python3 layout.py train --dataset=/path/to/layout/dataset --weights=imagenet --layers='heads' --lr=0.001 --epochs=30
 
-    # Apply color splash to an image
-    python3 layout.py splash --weights=/path/to/weights/file.h5 --image=<URL or path to file>
     
 """
 
@@ -158,6 +156,7 @@ class LayoutDataset(utils.Dataset):
             y1= int(p[2]*info["height"])
             y2= int(p[3]*info["height"])
             #print(info["path"],x1,x2,y1,y2,p)
+            #We don't need Polygon Mask , so will input bbox co-ords as Mask co-ords.
             rr, cc = skimage.draw.rectangle((x1,y1), (x2,y2))
             #print(info["path"],i,p[0])
             #rr, cc = skimage.draw.polygon([p[0]*info["width"],p[1]*info["width"]], [p[2]*info["height"],p[3]*info["height"]])
@@ -203,45 +202,6 @@ def train(model):
 
 
 
-def class_mask(image, mask):
-    """Apply color splash effect.
-    image: RGB image [height, width, 3]
-    mask: instance segmentation mask [height, width, instance count]
-
-    Returns result image.
-    """
-    # Make a grayscale copy of the image. The grayscale copy still
-    # has 3 RGB channels, though.
-    gray = skimage.color.gray2rgb(skimage.color.rgb2gray(image)) * 255
-    # Copy color pixels from the original color image where mask is set
-    if mask.shape[-1] > 0:
-        # We're treating all instances as one, so collapse the mask into one layer
-        mask = (np.sum(mask, -1, keepdims=True) >= 1)
-        splash = np.where(mask, image, gray).astype(np.uint8)
-    else:
-        splash = gray.astype(np.uint8)
-    return splash
-
-
-def detect_and_class_mask(model, image_path=None, video_path=None):
-    assert image_path or video_path
- 
-    # Run model detection and generate the class mask effect
-    print("Running on {}".format(args.image))
-    # Read image
-    image = skimage.io.imread(args.image)
-    # Detect objects
-    r = model.detect([image], verbose=1)[0]
-    # Color splash
-    splash = class_mask(image, r['masks'])
-    # Save output
-    file_name = "splash_{:%Y%m%dT%H%M%S}.png".format(datetime.datetime.now())
-    skimage.io.imsave(file_name, splash)
-
-
-
-
-
 ############################################################
 #  Training
 ############################################################
@@ -274,21 +234,12 @@ if __name__ == '__main__':
                         default=DEFAULT_LOGS_DIR,
                         metavar="/path/to/logs/",
                         help='Logs and checkpoints directory (default=logs/)')
-    parser.add_argument('--image', required=False,
-                        metavar="path or URL to image",
-                        help='Image to apply the color splash effect on')
-    parser.add_argument('--video', required=False,
-                        metavar="path or URL to video",
-                        help='Video to apply the color splash effect on')
     args = parser.parse_args()
 
     # Validate arguments
     if args.command == "train":
         assert args.dataset, "Argument --dataset is required for training"
-    elif args.command == "splash":
-        assert args.image or args.video,\
-               "Provide --image or --video to apply color splash"
-
+    
     print("Weights: ", args.weights)
     print("Dataset: ", args.dataset)
     print("Layers: ", args.layers)
@@ -346,9 +297,6 @@ if __name__ == '__main__':
     # Train or evaluate
     if args.command == "train":
         train(model)
-    elif args.command == "msk":
-        detect_and_class_mask(model, image_path=args.image,
-                                video_path=args.video)
     else:
         print("'{}' is not recognized. "
-              "Use 'train' or 'splash'".format(args.command))
+              "Use 'train' or 'Create a new command'".format(args.command))
