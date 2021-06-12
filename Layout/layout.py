@@ -104,8 +104,8 @@ class LayoutDataset(utils.Dataset):
                 image_name = (list(imglst)[i])
                 #print(image_name)
                 annt_pp = annotations['images'][image_name]['annotations']#Annotation Per page
-                coords = [list(annt_pp[r]['bbox'].values() ) for r in range(len(annt_pp))]#co-ordinates for layout
-                label = [(annt_pp[r]["label"]) for r in range(len(annt_pp))]#label for layout
+                coords = [list(annt_pp[r]['bbox'].values() ) for r in range(len(annt_pp)) if 1 & 0 not in annt_pp[r]['bbox'].values()]#co-ordinates for layout
+                label = [(annt_pp[r]["label"]) for r in range(len(annt_pp)) if 1 & 0 not in annt_pp[r]['bbox'].values()]#label for layout
                 label_dict={'Text':1,'Math':2,'Table':3,'Image':4}
                 label_ids = [label_dict[a] for a in label]
                 
