@@ -144,7 +144,7 @@ class LayoutDataset(utils.Dataset):
         mask = np.zeros([info["height"],info["width"], len(info["rectangle"]) ],
                         dtype=np.uint8)
 
-        print(info["path"])
+        
         for k, p in enumerate(info["rectangle"]):
             
             # Get indexes of pixels inside the polygon and set them to 1
@@ -191,7 +191,7 @@ def train(model):
     # Since we're using a very small dataset, and starting from
     # COCO trained weights, we don't need to train too long. Also,
     # no need to train all layers, just the heads should do it.
-    print("Training network heads")
+    print("Training network "+str(args.layers))
     model.train(dataset_train, dataset_val,
                 learning_rate= float(args.lr),
                 epochs= int(args.epochs),
