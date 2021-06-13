@@ -64,7 +64,7 @@ class LayoutConfig(Config):
     STEPS_PER_EPOCH = 100
 
     # Skip detections with < 70% confidence
-    DETECTION_MIN_CONFIDENCE = 0.9
+    DETECTION_MIN_CONFIDENCE = 0.3
 
 
 ############################################################
@@ -193,9 +193,9 @@ def train(model):
     # no need to train all layers, just the heads should do it.
     print("Training network heads")
     model.train(dataset_train, dataset_val,
-                learning_rate=config.LEARNING_RATE,
-                epochs=30,
-                layers='all')
+                learning_rate= args.lr,
+                epochs= args.epochs,
+                layers= args.layers)
 
 
 ############################################################
