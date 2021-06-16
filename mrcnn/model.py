@@ -1053,7 +1053,7 @@ def rpn_class_loss_graph(rpn_match, rpn_class_logits):
                                              output=rpn_class_logits,
                                              from_logits=True)
     #FOCAL LOSS
-    #loss = Focal_loss(anchor_class,rpn_class_logits,CE_loss)
+    loss = Focal_loss(anchor_class,rpn_class_logits,loss)
 
     loss = K.switch(tf.size(loss) > 0, K.mean(loss), tf.constant(0.0))
     return loss
