@@ -45,7 +45,7 @@ class Config(object):
     # Number of validation steps to run at the end of every training epoch.
     # A bigger number improves accuracy of validation stats, but slows
     # down the training.
-    VALIDATION_STEPS = 50
+    VALIDATION_STEPS = 80
 
     # Backbone network architecture
     # Supported values are: resnet50, resnet101.
@@ -73,11 +73,11 @@ class Config(object):
     NUM_CLASSES = 5  # Override in sub-classes
 
     # Length of square anchor side in pixels
-    RPN_ANCHOR_SCALES = (32, 64, 128, 256, 512)
+    RPN_ANCHOR_SCALES = (8,32, 64, 128, 256)
 
     # Ratios of anchors at each cell (width/height)
     # A value of 1 represents a square anchor, and 0.5 is a wide anchor
-    RPN_ANCHOR_RATIOS = [0.5, 1, 10]
+    RPN_ANCHOR_RATIOS = [1, 3, 10]
 
     # Anchor stride
     # If 1 then anchors are created for each cell in the backbone feature map.
@@ -89,7 +89,7 @@ class Config(object):
     RPN_NMS_THRESHOLD = 0.7
 
     # How many anchors per image to use for RPN training
-    RPN_TRAIN_ANCHORS_PER_IMAGE = 256
+    RPN_TRAIN_ANCHORS_PER_IMAGE = 4096
     
     # ROIs kept after tf.nn.top_k and before non-maximum suppression
     PRE_NMS_LIMIT = 6000
@@ -100,7 +100,7 @@ class Config(object):
 
     # If enabled, resizes instance masks to a smaller size to reduce
     # memory load. Recommended when using high-resolution images.
-    USE_MINI_MASK = True
+    USE_MINI_MASK = False
     MINI_MASK_SHAPE = (56, 56)  # (height, width) of the mini-mask
 
     # Input image resizing
@@ -169,10 +169,10 @@ class Config(object):
 
     # Minimum probability value to accept a detected instance
     # ROIs below this threshold are skipped
-    DETECTION_MIN_CONFIDENCE = 0.3
+    DETECTION_MIN_CONFIDENCE = 0.5
 
     # Non-maximum suppression threshold for detection
-    DETECTION_NMS_THRESHOLD = 0.7
+    DETECTION_NMS_THRESHOLD = 0.3
 
     # Learning rate and momentum
     # The Mask RCNN paper uses lr=0.02, but on TensorFlow it causes
